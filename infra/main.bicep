@@ -48,6 +48,7 @@ param gptModelCapacity int = 150
 param imageTag string = 'latest'
 
 param solutionPrefix string = 'macae-${padLeft(take(toLower(uniqueString(subscription().id, environmentName, resourceGroup().location, resourceGroup().name)), 12), 12, '0')}'
+param acrSolutionPrefix string = 'macae${padLeft(take(toLower(uniqueString(subscription().id, environmentName, resourceGroup().location, resourceGroup().name)), 12), 12, '0')}'
 
 @description('Optional. The tags to apply to all deployed Azure resources.')
 param tags object = {
@@ -81,6 +82,15 @@ param userAssignedManagedIdentityConfiguration userAssignedManagedIdentityType =
   name: 'id-${solutionPrefix}'
   location: solutionLocation
   tags: tags
+}
+
+@description('Optional. The configuration to apply for the Container Registry resource.')
+param containerRegistryConfiguration containerRegistryConfigurationType = {
+  enabled: true
+  name: 'cr${acrSolutionPrefix}'
+  location: solutionLocation
+  tags: tags
+  publicNetworkAccess: 'Enabled'
 }
 
 @description('Optional. The configuration to apply for the Multi-Agent Custom Automation Engine Network Security Group resource for the backend subnet.')
@@ -301,6 +311,35 @@ module userAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-id
     enableTelemetry: enableTelemetry
   }
 }
+
+// ========== Container Registry ========== //
+// WAF best practices for container registry: https://learn.microsoft.com/en-us/azure/well-architected/service-guides/azure-container-registry
+var containerRegistryEnabled = containerRegistryConfiguration.?enabled ?? true
+var containerRegistryResourceName = containerRegistryConfiguration.?name ?? 'cr${solutionPrefix}'
+module containerRegistry 'br/public:avm/res/container-registry/registry:0.9.0' = if (containerRegistryEnabled) {
+  name: take('avm.res.container-registry.registry.${containerRegistryResourceName}', 64)
+  params: {
+    name: containerRegistryResourceName
+    location: containerRegistryConfiguration.?location ?? solutionLocation
+    tags: containerRegistryConfiguration.?tags ?? tags
+    enableTelemetry: enableTelemetry
+    acrSku: 'Standard'
+    publicNetworkAccess: (containerRegistryConfiguration.?publicNetworkAccess == 'Disabled' ? 'Disabled' : 'Enabled')
+    roleAssignments: [
+      {
+        principalId: userAssignedIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'AcrPull'
+      }
+      {
+        principalId: userAssignedIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'AcrPush'
+      }
+    ]
+  }
+}
+
 
 // ========== Network Security Groups ========== //
 // WAF best practices for virtual networks: https://learn.microsoft.com/en-us/azure/well-architected/service-guides/virtual-network
@@ -1712,4 +1751,24 @@ type webSiteConfigurationType = {
 
   @description('Optional. The tag of the container image to be used by the Web Site.')
   containerImageTag: string?
+}
+@export()
+@description('The type for the Multi-Agent Custom Automation Engine Container Registry resource configuration.')
+type containerRegistryConfigurationType = {
+  @description('Optional. If the Container Registry resource should be deployed or not.')
+  enabled: bool?
+
+  @description('Optional. The name of the Container Registry resource.')
+  @maxLength(50)
+  name: string?
+
+  @description('Optional. Location for the Container Registry resource.')
+  @metadata({ azd: { type: 'location' } })
+  location: string?
+
+  @description('Optional. The tags to set for the Container Registry resource.')
+  tags: object?
+
+  @description('Optional. Whether or not public network access is allowed for the container registry.')
+  publicNetworkAccess: string?
 }
