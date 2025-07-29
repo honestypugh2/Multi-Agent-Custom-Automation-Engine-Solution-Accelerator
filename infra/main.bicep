@@ -47,8 +47,9 @@ param gptModelCapacity int = 150
 @description('Set the image tag for the container images used in the solution. Default is "latest".')
 param imageTag string = 'latest'
 
-param solutionPrefix string = 'macae-${padLeft(take(toLower(uniqueString(subscription().id, environmentName, resourceGroup().location, resourceGroup().name)), 12), 12, '0')}'
-param acrSolutionPrefix string = 'macae${padLeft(take(toLower(uniqueString(subscription().id, environmentName, resourceGroup().location, resourceGroup().name)), 12), 12, '0')}'
+//param solutionPrefix string = 'macae-${padLeft(take(toLower(uniqueString(subscription().id, environmentName, resourceGroup().location, resourceGroup().name)), 12), 12, '0')}'
+
+param solutionPrefix string = 'macae${padLeft(take(toLower(uniqueString(subscription().id, environmentName, resourceGroup().location, resourceGroup().name)), 12), 12, '0')}'
 
 @description('Optional. The tags to apply to all deployed Azure resources.')
 param tags object = {
@@ -86,11 +87,11 @@ param userAssignedManagedIdentityConfiguration userAssignedManagedIdentityType =
 
 @description('Optional. The configuration to apply for the Container Registry resource.')
 param containerRegistryConfiguration containerRegistryConfigurationType = {
-  enabled: true
-  name: 'cr${acrSolutionPrefix}'
-  location: solutionLocation
-  tags: tags
-  publicNetworkAccess: 'Enabled'
+enabled: true
+name: 'cr${solutionPrefix}'
+location: solutionLocation
+tags: tags
+publicNetworkAccess: 'Enabled'
 }
 
 @description('Optional. The configuration to apply for the Multi-Agent Custom Automation Engine Network Security Group resource for the backend subnet.')
@@ -211,7 +212,7 @@ param containerAppConfiguration containerAppConfigurationType = {
   concurrentRequests: '100'
   containerCpu: '2.0'
   containerMemory: '4.0Gi'
-  containerImageRegistryDomain: 'biabcontainerreg.azurecr.io'
+  // containerImageRegistryDomain: 'biabcontainerreg.azurecr.io'
   containerImageName: 'macaebackend'
   containerImageTag: imageTag
   containerName: 'backend'
@@ -235,7 +236,8 @@ param webSiteConfiguration webSiteConfigurationType = {
   enabled: true
   name: 'app-${solutionPrefix}'
   location: solutionLocation
-  containerImageRegistryDomain: 'biabcontainerreg.azurecr.io'
+  //containerImageRegistryDomain: 'biabcontainerreg.azurecr.io'
+  //containerImageRegistryDomain: containerRegistry.outputs.loginServer // Change this line
   containerImageName: 'macaefrontend'
   containerImageTag: imageTag
   containerName: 'backend'
@@ -339,6 +341,7 @@ module containerRegistry 'br/public:avm/res/container-registry/registry:0.9.0' =
     ]
   }
 }
+
 
 
 // ========== Network Security Groups ========== //
@@ -1003,10 +1006,17 @@ module containerApp 'br/public:avm/res/app/container-app:0.14.2' = if (container
         }
       ]
     }
+    registries:[
+      {
+        server: containerRegistry.outputs.loginServer
+        identity: userAssignedIdentity.outputs.resourceId
+      }
+    ]
     containers: [
       {
         name: containerAppConfiguration.?containerName ?? 'backend'
-        image: '${containerAppConfiguration.?containerImageRegistryDomain ?? 'biabcontainerreg.azurecr.io'}/${containerAppConfiguration.?containerImageName ?? 'macaebackend'}:${containerAppConfiguration.?containerImageTag ?? 'latest'}'
+        // image: '${containerAppConfiguration.?containerImageRegistryDomain ?? 'biabcontainerreg.azurecr.io'}/${containerAppConfiguration.?containerImageName ?? 'macaebackend'}:${containerAppConfiguration.?containerImageTag ?? 'latest'}'
+        image: '${containerRegistry.outputs.loginServer}/${containerAppConfiguration.?containerImageName ?? 'macaebackend'}:${containerAppConfiguration.?containerImageTag ?? 'latest'}'
         resources: {
           //TODO: Make cpu and memory parameterized
           cpu: containerAppConfiguration.?containerCpu ?? '2.0'
@@ -1104,6 +1114,33 @@ module webServerFarm 'br/public:avm/res/web/serverfarm:0.4.1' = if (webServerFar
 var webSiteEnabled = webSiteConfiguration.?enabled ?? true
 
 var webSiteName = 'app-${solutionPrefix}'
+// module webSite 'br/public:avm/res/web/site:0.15.1' = if (webSiteEnabled) {
+//   name: take('avm.res.web.site.${webSiteName}', 64)
+//   params: {
+//     name: webSiteName
+//     tags: webSiteConfiguration.?tags ?? tags
+//     location: webSiteConfiguration.?location ?? solutionLocation
+//     kind: 'app,linux,container'
+//     enableTelemetry: enableTelemetry
+//     serverFarmResourceId: webSiteConfiguration.?environmentResourceId ?? webServerFarm.?outputs.resourceId
+//     appInsightResourceId: applicationInsights.outputs.resourceId
+//     diagnosticSettings: [{ workspaceResourceId: logAnalyticsWorkspaceId }]
+//     publicNetworkAccess: 'Enabled' //TODO: use Azure Front Door WAF or Application Gateway WAF instead
+//     siteConfig: {
+//       linuxFxVersion: 'DOCKER|${containerRegistry.outputs.loginServer}/${webSiteConfiguration.?containerImageName ?? 'macaefrontend'}:${webSiteConfiguration.?containerImageTag ?? 'latest'}'
+//     }
+//     appSettingsKeyValuePairs: {
+//       SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
+//       //DOCKER_REGISTRY_SERVER_URL: 'https://${webSiteConfiguration.?containerImageRegistryDomain ?? 'biabcontainerreg.azurecr.io'}'
+//       DOCKER_REGISTRY_SERVER_URL: 'https://${containerRegistry.outputs.loginServer}'
+//       WEBSITES_PORT: '3000'
+//       WEBSITES_CONTAINER_START_TIME_LIMIT: '1800' // 30 minutes, adjust as needed
+//       BACKEND_API_URL: 'https://${containerApp.outputs.fqdn}'
+//       AUTH_ENABLED: 'false'
+//     }
+//   }
+// }
+
 module webSite 'br/public:avm/res/web/site:0.15.1' = if (webSiteEnabled) {
   name: take('avm.res.web.site.${webSiteName}', 64)
   params: {
@@ -1116,19 +1153,32 @@ module webSite 'br/public:avm/res/web/site:0.15.1' = if (webSiteEnabled) {
     appInsightResourceId: applicationInsights.outputs.resourceId
     diagnosticSettings: [{ workspaceResourceId: logAnalyticsWorkspaceId }]
     publicNetworkAccess: 'Enabled' //TODO: use Azure Front Door WAF or Application Gateway WAF instead
+
+    // Add managed identity configuration
+    managedIdentities: {
+      userAssignedResourceIds: [userAssignedIdentity.outputs.resourceId]
+    }
+
     siteConfig: {
-      linuxFxVersion: 'DOCKER|${webSiteConfiguration.?containerImageRegistryDomain ?? 'biabcontainerreg.azurecr.io'}/${webSiteConfiguration.?containerImageName ?? 'macaefrontend'}:${webSiteConfiguration.?containerImageTag ?? 'latest'}'
+      linuxFxVersion: 'DOCKER|${containerRegistry.outputs.loginServer}/${webSiteConfiguration.?containerImageName ?? 'macaefrontend'}:${webSiteConfiguration.?containerImageTag ?? 'latest'}'
+      acrUseManagedIdentityCreds: true
+      acrUserManagedIdentityID: userAssignedIdentity.outputs.clientId
     }
     appSettingsKeyValuePairs: {
       SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
-      DOCKER_REGISTRY_SERVER_URL: 'https://${webSiteConfiguration.?containerImageRegistryDomain ?? 'biabcontainerreg.azurecr.io'}'
+      DOCKER_REGISTRY_SERVER_URL: 'https://${containerRegistry.outputs.loginServer}'
       WEBSITES_PORT: '3000'
       WEBSITES_CONTAINER_START_TIME_LIMIT: '1800' // 30 minutes, adjust as needed
       BACKEND_API_URL: 'https://${containerApp.outputs.fqdn}'
       AUTH_ENABLED: 'false'
+
+      // Add ACR authentication settings
+      DOCKER_REGISTRY_SERVER_USERNAME: ''
+      DOCKER_REGISTRY_SERVER_PASSWORD: ''
     }
   }
 }
+
 
 // ============ //
 // Outputs      //
@@ -1138,6 +1188,17 @@ module webSite 'br/public:avm/res/web/site:0.15.1' = if (webSiteEnabled) {
 
 @description('The default url of the website to connect to the Multi-Agent Custom Automation Engine solution.')
 output webSiteDefaultHostname string = webSite.outputs.defaultHostname
+
+@description('The login server URL of the container registry.')
+//output AZURE_CONTAINER_REGISTRY_ENDPOINT string = 'acrcontosolwmtfzhx4qjgc.azurecr.io'
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
+
+// ================ //
+// Definitions      //
+// ================ //
+//
+// Add your User-defined-types here, if any
+//
 
 @export()
 @description('The type for the Multi-Agent Custom Automation Engine Log Analytics Workspace resource configuration.')
@@ -1204,6 +1265,27 @@ type userAssignedManagedIdentityType = {
 
   @description('Optional. The tags to set for the User Assigned Managed Identity resource.')
   tags: object?
+}
+
+@export()
+@description('The type for the Multi-Agent Custom Automation Engine Container Registry resource configuration.')
+type containerRegistryConfigurationType = {
+  @description('Optional. If the Container Registry resource should be deployed or not.')
+  enabled: bool?
+
+  @description('Optional. The name of the Container Registry resource.')
+  @maxLength(50)
+  name: string?
+
+  @description('Optional. Location for the Container Registry resource.')
+  @metadata({ azd: { type: 'location' } })
+  location: string?
+
+  @description('Optional. The tags to set for the Container Registry resource.')
+  tags: object?
+
+  @description('Optional. Whether or not public network access is allowed for the container registry.')
+  publicNetworkAccess: string?
 }
 
 @export()
