@@ -1834,23 +1834,3 @@ type webSiteConfigurationType = {
   @description('Optional. The tag of the container image to be used by the Web Site.')
   containerImageTag: string?
 }
-@export()
-@description('The type for the Multi-Agent Custom Automation Engine Container Registry resource configuration.')
-type containerRegistryConfigurationType = {
-  @description('Optional. If the Container Registry resource should be deployed or not.')
-  enabled: bool?
-
-  @description('Optional. The name of the Container Registry resource.')
-  @maxLength(50)
-  name: string?
-
-  @description('Optional. Location for the Container Registry resource.')
-  @metadata({ azd: { type: 'location' } })
-  location: string?
-
-  @description('Optional. The tags to set for the Container Registry resource.')
-  tags: object?
-
-  @description('Optional. Whether or not public network access is allowed for the container registry.')
-  publicNetworkAccess: string?
-}
