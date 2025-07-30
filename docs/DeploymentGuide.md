@@ -199,7 +199,7 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
    ```
 
 3. Provide an `azd` environment name (e.g., "macaeapp").
-4. Select a subscription from your Azure account and choose a location that has quota for all the resources.
+4. Select a subscription from your Azure account and choose a location that has quota for all the resources. You will also be prompted to select 'useWafAlignedArchitecture' (default to False, indicating a sandbox environment), choose an existing or new resource group and the location for it as well.
 
    - This deployment will take _4-6 minutes_ to provision the resources in your account and set up the solution with sample data.
    - If you encounter an error or timeout during deployment, changing the location may help, as there could be availability constraints for the resources.
@@ -225,7 +225,7 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
 
     ```
 
-    **OR** if you would rather run the code above using a shell script,
+    **OR** if you would rather run the code above using a shell script, update the permissions to make the `build_and_push_after_acr.sh` executable and input your values for the resource group and image tag.
 
     ```bash
     chmod +x infra/scripts/build_and_push_after_acr.sh
