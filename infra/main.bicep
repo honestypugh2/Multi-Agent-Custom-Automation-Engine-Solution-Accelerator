@@ -236,8 +236,6 @@ param webSiteConfiguration webSiteConfigurationType = {
   enabled: true
   name: 'app-${solutionPrefix}'
   location: solutionLocation
-  //containerImageRegistryDomain: 'biabcontainerreg.azurecr.io'
-  //containerImageRegistryDomain: containerRegistry.outputs.loginServer // Change this line
   containerImageName: 'macaefrontend'
   containerImageTag: imageTag
   containerName: 'backend'
@@ -1114,33 +1112,6 @@ module webServerFarm 'br/public:avm/res/web/serverfarm:0.4.1' = if (webServerFar
 var webSiteEnabled = webSiteConfiguration.?enabled ?? true
 
 var webSiteName = 'app-${solutionPrefix}'
-// module webSite 'br/public:avm/res/web/site:0.15.1' = if (webSiteEnabled) {
-//   name: take('avm.res.web.site.${webSiteName}', 64)
-//   params: {
-//     name: webSiteName
-//     tags: webSiteConfiguration.?tags ?? tags
-//     location: webSiteConfiguration.?location ?? solutionLocation
-//     kind: 'app,linux,container'
-//     enableTelemetry: enableTelemetry
-//     serverFarmResourceId: webSiteConfiguration.?environmentResourceId ?? webServerFarm.?outputs.resourceId
-//     appInsightResourceId: applicationInsights.outputs.resourceId
-//     diagnosticSettings: [{ workspaceResourceId: logAnalyticsWorkspaceId }]
-//     publicNetworkAccess: 'Enabled' //TODO: use Azure Front Door WAF or Application Gateway WAF instead
-//     siteConfig: {
-//       linuxFxVersion: 'DOCKER|${containerRegistry.outputs.loginServer}/${webSiteConfiguration.?containerImageName ?? 'macaefrontend'}:${webSiteConfiguration.?containerImageTag ?? 'latest'}'
-//     }
-//     appSettingsKeyValuePairs: {
-//       SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
-//       //DOCKER_REGISTRY_SERVER_URL: 'https://${webSiteConfiguration.?containerImageRegistryDomain ?? 'biabcontainerreg.azurecr.io'}'
-//       DOCKER_REGISTRY_SERVER_URL: 'https://${containerRegistry.outputs.loginServer}'
-//       WEBSITES_PORT: '3000'
-//       WEBSITES_CONTAINER_START_TIME_LIMIT: '1800' // 30 minutes, adjust as needed
-//       BACKEND_API_URL: 'https://${containerApp.outputs.fqdn}'
-//       AUTH_ENABLED: 'false'
-//     }
-//   }
-// }
-
 module webSite 'br/public:avm/res/web/site:0.15.1' = if (webSiteEnabled) {
   name: take('avm.res.web.site.${webSiteName}', 64)
   params: {
