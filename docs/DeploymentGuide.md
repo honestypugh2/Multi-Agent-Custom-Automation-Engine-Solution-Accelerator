@@ -267,8 +267,8 @@ The All-in-One approach is a 3-Step deployment in one script that handles Deploy
 
 2. Make scripts executable.
     ```bash
-    chmod +x infra/scripts/build-and-push-after-acr.sh
-    chmod +x infra/scripts/deploy-workflow.sh
+    chmod +x infra/scripts/build_and_push_after_acr.sh
+    chmod +x infra/scripts/deploy_workflow.sh
     ```
 3. Set environment variables:
     ```bash
@@ -279,7 +279,7 @@ The All-in-One approach is a 3-Step deployment in one script that handles Deploy
     ```
 4. Run the complete workflow
     ```bash
-    ./infra/scripts/deploy-workflow.sh
+    ./infra/scripts/deploy_workflow.sh
     ```
     Or, run each step individually:
 
@@ -287,8 +287,8 @@ The All-in-One approach is a 3-Step deployment in one script that handles Deploy
     # Step 1: Deploy ACR
     az deployment group create \
       --resource-group "$AZURE_RESOURCE_GROUP" \
-      --template-file "infra/deploy-acr-only.bicep" \
-      --parameters "infra/deploy-acr-only.parameters.json"
+      --template-file "infra/deploy_acr_only.bicep" \
+      --parameters "infra/deploy_acr_only.parameters.json"
     ```
 
     ```bash
@@ -300,8 +300,8 @@ The All-in-One approach is a 3-Step deployment in one script that handles Deploy
     # Step 3: Deploy Container Apps
     az deployment group create \
       --resource-group "$AZURE_RESOURCE_GROUP" \
-      --template-file "infra/deploy-container-apps-only.bicep" \
-      --parameters "infra/deploy-container-apps-only.parameters.json"
+      --template-file "infra/deploy_container_apps_only.bicep" \
+      --parameters "infra/deploy_container_apps_only.parameters.json"
     ```
 
     You could even list out the parameters:
