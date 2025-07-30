@@ -204,9 +204,122 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
    - This deployment will take _4-6 minutes_ to provision the resources in your account and set up the solution with sample data.
    - If you encounter an error or timeout during deployment, changing the location may help, as there could be availability constraints for the resources.
 
+    **⚠️ Warning:** This current deployment will return a **deployment error** because the Container App is trying to pull a container image that does not exist in your Azure Container Registry. This means that the Bicep template is set to use ACR but the container images have not been built and pushed to the registry yet. This deployment uses Azure Container Registry (ACR) as the DEFAULT container registry. The creation of ACR can be found in `infra/main.bicep`. 
+
+    Before moving to step 5, we will manually build and push the images to ACR. In your terminal (where the deployment failed), execute the following code. Make sure to check your deployment in Azure Portal and retrieve the RESOURCE_GROUP, ACR_NAME, ACR_LOGIN_SERVER, and IMAGE_TAG.
+
+    ```bash
+    # Login to Azure
+    az login
+
+    # Authenticate first
+    az acr login --name <acr-name>
+
+    # Build and push backend image
+    docker build -t <acr-login-server>/macaebackend:<image-tag> ./src/backend
+    docker push <acr-name>.azurecr.io/macaebackend:<image-tag>
+
+    # Build and push frontend image
+    docker build -t <acr-login-server>/macaefrontend:<image-tag> ./src/frontend
+    docker push <acr-login-server>/macaefrontend:<image-tag>
+
+    ```
+
+    **OR** if you would rather run the code above using a shell script,
+
+    ```bash
+    chmod +x infra/scripts/build_and_push_after_acr.sh
+
+    # Run the build and push script
+    ./infra/scripts/build_and_push_after_acr.sh -g "$RESOURCE_GROUP" -t "$IMAGE_TAG"
+    ```
+
+    Once the images are successfully pushed to ACR, continue the Provision and deploy all resources from Step 2.
+
+    ```bash
+    azd up
+    ```
+
 5. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service, and get the app URL from `Default domain`.
 
-6. If you are done trying out the application, you can delete the resources by running `azd down`.
+6. If you are done trying out the application, you can delete the resources by running `azd down` or `azd down --purge --force`.
+
+### Deploying with AZD: All-in-One
+The All-in-One approach is a 3-Step deployment in one script that handles Deploy ACR only, build and push images to ACR, and Deploy Container Apps (rest of the deployment). This breaks up the `infra/main.bicep` into two bicep templates. *Note that `infra/main.bicep` is not used for All-in-One deployment.* Deploy ACR only at `infra/deploy_acr_only.bicep` and Deploy Container Apps at `infra/deploy_container_apps_only.bicep`.
+
+1. Login to Azure:
+
+   ```bash
+   azd auth login
+   ```
+
+   OR
+
+   ```bash
+   az login
+   ```
+
+   #### To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
+
+   ```bash
+   azd auth login --tenant-id <tenant-id>
+   ```
+
+2. Make scripts executable.
+    ```bash
+    chmod +x infara/scripts/build-and-push-after-acr.sh
+    chmod +x infra/scripts/deploy-workflow.sh
+    ```
+3. Set environment variables:
+    ```bash
+    export AZURE_ENV_NAME=<env-name>
+    export AZURE_LOCATION=<location>
+    export AZURE_RESOURCE_GROUP=<resource-group-name>
+    export AZURE_ENV_OPENAI_LOCATION=<openai-location>
+    ```
+4. Run the complete workflow
+    ```bash
+    ./infra/scripts/deploy-workflow.sh
+    ```
+    Or, run each step individually:
+
+    ```bash
+    # Step 1: Deploy ACR
+    az deployment group create \
+      --resource-group "$AZURE_RESOURCE_GROUP" \
+      --template-file "infra/deploy-acr-only.bicep" \
+      --parameters "infra/deploy-acr-only.parameters.json"
+    ```
+
+    ```bash
+    # Step 2: Build and push images
+    ./infra/scripts/build-and-push-after-acr.sh -g "$AZURE_RESOURCE_GROUP" -t "latest"
+    ```
+
+    ```bash
+    # Step 3: Deploy Container Apps
+    az deployment group create \
+      --resource-group "$AZURE_RESOURCE_GROUP" \
+      --template-file "infra/deploy-container-apps-only.bicep" \
+      --parameters "infra/deploy-container-apps-only.parameters.json"
+    ```
+
+    You could even list out the parameters:
+
+    ```bash
+    az deployment group create \
+      --resource-group "$RESOURCE_GROUP" \
+      --template-file "infra/deploy_container_apps_only.bicep" \
+      --parameters environmentName="$ENV_NAME" \
+                  solutionLocation="$LOCATION" \
+                  enableTelemetry="$ENABLE_TELEMETRY" \
+                  imageTag="$IMAGE_TAG"
+    ```
+
+This workflow ensures:
+- Step 1: ACR is available before building images
+- Step 2: Images are pushed to ACR before Container Apps deployment
+- Step 3: Container Apps can successfully pull images from ACR
 
 ### Publishing Local Build Container to Azure Container Registry
 
