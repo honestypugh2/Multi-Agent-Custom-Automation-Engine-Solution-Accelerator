@@ -50,7 +50,7 @@ print_info "  Enable Telemetry: $ENABLE_TELEMETRY"
 
 # Create resource group if it doesn't exist
 print_step "STEP 0: CREATING RESOURCE GROUP"
-az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output table
+az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output table --only-show-errors
 print_success "Resource group ready"
 
 # Step 1: Deploy Container Registry
@@ -65,7 +65,8 @@ az deployment group create \
                enableTelemetry="$ENABLE_TELEMETRY" \
                imageTag="$IMAGE_TAG" \
   --name "$STEP1_DEPLOYMENT_NAME" \
-  --output table
+  --output table \
+  --only-show-errors
 
 if [[ $? -ne 0 ]]; then
     print_error "Container Registry deployment failed"
@@ -79,17 +80,20 @@ print_info "Retrieving Container Registry information..."
 ACR_NAME=$(az deployment group show \
   --resource-group "$RESOURCE_GROUP" \
   --name "$STEP1_DEPLOYMENT_NAME" \
-  --query "properties.outputs.containerRegistryName.value" -o tsv)
+  --query "properties.outputs.containerRegistryName.value" -o tsv \
+  --only-show-errors)
 
 ACR_LOGIN_SERVER=$(az deployment group show \
   --resource-group "$RESOURCE_GROUP" \
   --name "$STEP1_DEPLOYMENT_NAME" \
-  --query "properties.outputs.containerRegistryLoginServer.value" -o tsv)
+  --query "properties.outputs.containerRegistryLoginServer.value" -o tsv \
+  --only-show-errors)
 
 SOLUTION_PREFIX=$(az deployment group show \
   --resource-group "$RESOURCE_GROUP" \
   --name "$STEP1_DEPLOYMENT_NAME" \
-  --query "properties.outputs.solutionPrefix.value" -o tsv)
+  --query "properties.outputs.solutionPrefix.value" -o tsv \
+  --only-show-errors)
 
 print_info "ACR Name: $ACR_NAME"
 print_info "ACR Login Server: $ACR_LOGIN_SERVER"
@@ -123,7 +127,8 @@ az deployment group create \
                enableTelemetry="$ENABLE_TELEMETRY" \
                imageTag="$IMAGE_TAG" \
   --name "$STEP3_DEPLOYMENT_NAME" \
-  --output table
+  --output table \
+  --only-show-errors
 
 if [[ $? -ne 0 ]]; then
     print_error "Container Apps deployment failed"
@@ -137,7 +142,8 @@ print_info "Retrieving Container App information..."
 CONTAINER_APP_FQDN=$(az deployment group show \
   --resource-group "$RESOURCE_GROUP" \
   --name "$STEP3_DEPLOYMENT_NAME" \
-  --query "properties.outputs.containerAppFqdn.value" -o tsv 2>/dev/null || echo "")
+  --query "properties.outputs.containerAppFqdn.value" -o tsv \
+  --only-show-errors 2>/dev/null || echo "")
 
 print_step "DEPLOYMENT COMPLETED SUCCESSFULLY"
 
