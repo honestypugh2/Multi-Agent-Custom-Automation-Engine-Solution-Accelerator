@@ -267,7 +267,7 @@ The All-in-One approach is a 3-Step deployment in one script that handles Deploy
 
 2. Make scripts executable.
     ```bash
-    chmod +x infara/scripts/build-and-push-after-acr.sh
+    chmod +x infra/scripts/build-and-push-after-acr.sh
     chmod +x infra/scripts/deploy-workflow.sh
     ```
 3. Set environment variables:
