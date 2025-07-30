@@ -1,5 +1,5 @@
 #!/bin/bash
-# filepath: /workspaces/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator/scripts/build-and-push-after-acr.sh
+# filepath: /workspaces/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator/scripts/build_and_push_after_acr.sh
 
 set -e
 
