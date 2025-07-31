@@ -26,7 +26,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 This will allow the scripts to run for the current session without permanently changing your system's policy.
 
-## Deployment Options & Steps
+## Deployment Options
 
 ### Sandbox or WAF Aligned Deployment Options
 
@@ -66,75 +66,7 @@ param logAnalyticsWorkspaceConfiguration = {
 > [!IMPORTANT]
 > The WAF-aligned configuration is under active development. More Azure Well-Architected recommendations will be added in future updates.
 
-### Deployment Steps 
-
-Pick from the options below to see step-by-step instructions for GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
-
-| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator) |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-
-<details>
-  <summary><b>Deploy in GitHub Codespaces</b></summary>
-
-### GitHub Codespaces
-
-You can run this solution using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
-
-1. Open the solution accelerator (this may take several minutes):
-
-   [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator)
-
-2. Accept the default values on the create Codespaces page.
-3. Open a terminal window if it is not already open.
-4. Continue with the [deploying steps](#deploying-with-azd).
-
-</details>
-
-<details>
-  <summary><b>Deploy in VS Code</b></summary>
-
-### VS Code Dev Containers
-
-You can run this solution in VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
-
-1. Start Docker Desktop (install it if not already installed).
-2. Open the project:
-
-   [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator)
-
-3. In the VS Code window that opens, once the project files show up (this may take several minutes), open a terminal window.
-4. Continue with the [deploying steps](#deploying-with-azd).
-
-</details>
-
-<details>
-  <summary><b>Deploy in your local Environment</b></summary>
-
-### Local Environment
-
-If you're not using one of the above options for opening the project, then you'll need to:
-
-1. Make sure the following tools are installed:
-
-   - [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.5) <small>(v7.0+)</small> - available for Windows, macOS, and Linux.
-   - [Azure Developer CLI (azd)](https://aka.ms/install-azd) <small>(v1.15.0+)</small> - version
-   - [Python 3.9+](https://www.python.org/downloads/)
-   - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-   - [Git](https://git-scm.com/downloads)
-
-2. Clone the repository or download the project code via command-line:
-
-   ```shell
-   azd init -t microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator/
-   ```
-
-3. Open the project folder in your terminal or editor.
-4. Continue with the [deploying steps](#deploying-with-azd).
-
-</details>
-
-<br/>
-
+### Deployment Considerations
 Consider the following settings during your deployment to modify specific settings:
 
 <details>
@@ -176,11 +108,70 @@ To adjust quota settings, follow these [steps](./AzureGPTQuotaSettings.md).
 
 </details>
 
-### Deploying with AZD
+## Deployment Steps with `azd`
 
-Once you've opened the project in [Codespaces](#github-codespaces), [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure by following these steps:
+Pick from the options below to see step-by-step instructions for GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
 
-1. Login to Azure:
+| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator) |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+
+<details>
+  <summary><b>Deploy in GitHub Codespaces</b></summary>
+
+### GitHub Codespaces
+
+You can run this solution using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
+
+1. Open the solution accelerator (this may take several minutes):
+
+   [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator)
+
+2. Accept the default values on the create Codespaces page.
+3. Open a terminal window if it is not already open.
+4. Continue with the [deploying steps](#deploying-with-azd).
+
+</details>
+
+<details>
+  <summary><b>Deploy in VS Code</b></summary>
+
+### VS Code Dev Containers
+
+You can run this solution in VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+
+1. Start Docker Desktop (install it if not already installed).
+2. Open the project:
+
+   [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator)
+
+3. In the VS Code window that opens, once the project files show up (this may take several minutes), open a terminal window.
+4. Continue with the [deploying steps](#deploying-with-azd).
+
+</details>
+
+<details>
+  <summary><b>Deploy in your Local Environment</b></summary>
+
+### Local Environment
+
+If you're not using one of the above options for opening the project, then you'll need to:
+
+1. Make sure the following tools are installed:
+
+   - [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.5) <small>(v7.0+)</small> - available for Windows, macOS, and Linux.
+   - [Azure Developer CLI (azd)](https://aka.ms/install-azd) <small>(v1.15.0+)</small> - version
+   - [Python 3.9+](https://www.python.org/downloads/)
+   - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+   - [Git](https://git-scm.com/downloads)
+
+2. Clone the repository or download the project code via command-line:
+
+   ```shell
+   azd init -t microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator/
+   ```
+
+3. Open the project folder in your terminal or editor. 
+4. Login to Azure:
 
    ```shell
    azd auth login
@@ -192,21 +183,21 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
    azd auth login --tenant-id <tenant-id>
    ```
 
-2. Provision and deploy all the resources:
+5. Provision and deploy all the resources:
 
    ```shell
    azd up
    ```
 
-3. Provide an `azd` environment name (e.g., "macaeapp").
-4. Select a subscription from your Azure account and choose a location that has quota for all the resources. You will also be prompted to select 'useWafAlignedArchitecture' (default to False, indicating a sandbox environment), choose an existing or new resource group and the location for it as well.
+6. Provide an `azd` environment name (e.g., "macaeapp").
+7. Select a subscription from your Azure account and choose a location that has quota for all the resources. You will also be prompted to select 'useWafAlignedArchitecture' (default to False, indicating a sandbox environment), choose an existing or new resource group and the location for it as well.
 
    - This deployment will take _4-6 minutes_ to provision the resources in your account and set up the solution with sample data.
    - If you encounter an error or timeout during deployment, changing the location may help, as there could be availability constraints for the resources.
 
     **⚠️ Warning:** This current deployment will return a **deployment error** because the Container App is trying to pull a container image that does not exist in your Azure Container Registry. This means that the Bicep template is set to use ACR but the container images have not been built and pushed to the registry yet. This deployment uses Azure Container Registry (ACR) as the DEFAULT container registry. The creation of ACR can be found in `infra/main.bicep`. 
 
-    Before moving to step 5, we will manually build and push the images to ACR. In your terminal (where the deployment failed), execute the following code. Make sure to check your deployment in Azure Portal and retrieve the RESOURCE_GROUP, ACR_NAME, ACR_LOGIN_SERVER, and IMAGE_TAG.
+    Before moving to step 8, we will manually build and push the images to ACR. In your terminal (where the deployment failed), execute the following code. Make sure to check your deployment in Azure Portal and retrieve the RESOURCE_GROUP, ACR_NAME, ACR_LOGIN_SERVER, and IMAGE_TAG.
 
     ```bash
     # Login to Azure
@@ -216,11 +207,11 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
     az acr login --name <acr-name>
 
     # Build and push backend image
-    docker build -t <acr-login-server>/macaebackend:<image-tag> ./src/backend
+    docker build --platform linux/amd64 -t <acr-login-server>/macaebackend:<image-tag> ./src/backend
     docker push <acr-name>.azurecr.io/macaebackend:<image-tag>
 
     # Build and push frontend image
-    docker build -t <acr-login-server>/macaefrontend:<image-tag> ./src/frontend
+    docker build --platform linux/amd64 -t <acr-login-server>/macaefrontend:<image-tag> ./src/frontend
     docker push <acr-login-server>/macaefrontend:<image-tag>
 
     ```
@@ -228,10 +219,10 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
     **OR** if you would rather run the code above using a shell script, update the permissions to make the `build_and_push_after_acr.sh` executable and input your values for the resource group and image tag.
 
     ```bash
-    chmod +x infra/scripts/build_and_push_after_acr.sh
+    chmod +x infra/scripts/build_and_push_after_acr_local.sh
 
     # Run the build and push script
-    ./infra/scripts/build_and_push_after_acr.sh -g "$RESOURCE_GROUP" -t "$IMAGE_TAG"
+    ./infra/scripts/build_and_push_after_acr_local.sh -g "RESOURCE_GROUP" -t "IMAGE_TAG"
     ```
 
     Once the images are successfully pushed to ACR, continue the Provision and deploy all resources from Step 2.
@@ -240,11 +231,17 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
     azd up
     ```
 
-5. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service, and get the app URL from `Default domain`.
+8. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service, and get the app URL from `Default domain`.
 
-6. If you are done trying out the application, you can delete the resources by running `azd down` or `azd down --purge --force`.
+9. When you're finished testing the application, you can remove all deployed resources by running `azd down` or use `azd down --purge --force` to force the removal.
 
-### Deploying with AZD: All-in-One
+
+</details>
+
+<br/>
+
+
+### Deploying with AZD: All-in-One Approach
 The All-in-One approach is a 3-Step deployment in one script that handles Deploy ACR only, build and push images to ACR, and Deploy Container Apps (rest of the deployment). This breaks up the `infra/main.bicep` into two bicep templates. *Note that `infra/main.bicep` is not used for All-in-One deployment.* Deploy ACR only at `infra/deploy_acr_only.bicep` and Deploy Container Apps at `infra/deploy_container_apps_only.bicep`.
 
 1. Login to Azure:
@@ -357,7 +354,7 @@ There are several ways to deploy the solution. You can deploy to run in Azure in
 
 When Deployment is complete, follow steps in [Set Up Authentication in Azure App Service](../docs/azure_app_service_auth_setup.md) to add app authentication to your web app running on Azure App Service
 
-# Local setup
+# Local Container Setup
 
 > **Note for macOS Developers**: If you are using macOS on Apple Silicon (ARM64) the DevContainer will **not** work. This is due to a limitation with the Azure Functions Core Tools (see [here](https://github.com/Azure/azure-functions-core-tools/issues/3112)).
 
@@ -395,7 +392,7 @@ When you start the development container for the first time, the container will 
 
 The files for the dev container are located in `/.devcontainer/` folder.
 
-## Local deployment and debugging:
+## Local Container Deployment and debugging:
 
 1. **Clone the repository.**
 
