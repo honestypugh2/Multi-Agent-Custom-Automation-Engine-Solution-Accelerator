@@ -152,7 +152,7 @@ You can run this solution in VS Code Dev Containers, which will open the project
 <details>
   <summary><b>Deploy in your Local Environment</b></summary>
 
-### Local Environment
+### Local Environment Deployment with Azure Container Registry
 
 If you're not using one of the above options for opening the project, then you'll need to:
 
@@ -366,7 +366,7 @@ The easiest way to run this accelerator is in a VS Code Dev Containers, which wi
 
 1. In the VS Code window that opens, once the project files show up (this may take several minutes), open a terminal window
 
-## Detailed Development Container setup instructions
+## Detailed Development Container Setup Instructions
 
 The solution contains a [development container](https://code.visualstudio.com/docs/remote/containers) with all the required tooling to develop and deploy the accelerator. To deploy the Chat With Your Data accelerator using the provided development container you will also need:
 
