@@ -13,7 +13,7 @@
 # Local Environment Deployment with Azure Container Registry
 
 
-4. Login to Azure:
+1. Login to Azure:
 
    ```shell
    azd auth login
@@ -25,14 +25,14 @@
    azd auth login --tenant-id <tenant-id>
    ```
 
-5. Provision and deploy all the resources:
+1. Provision and deploy all the resources:
 
    ```shell
    azd up
    ```
 
-6. Provide an `azd` environment name (e.g., "macaeapp").
-7. Select a subscription from your Azure account and choose a location that has quota for all the resources. You will also be prompted to select 'useWafAlignedArchitecture' (default to False, indicating a sandbox environment), choose an existing or new resource group and the location for it as well.
+1. Provide an `azd` environment name (e.g., "macaeapp").
+1. Select a subscription from your Azure account and choose a location that has quota for all the resources. You will also be prompted to select 'useWafAlignedArchitecture' (default to False, indicating a sandbox environment), choose an existing or new resource group and the location for it as well.
 
    - This deployment will take _4-6 minutes_ to provision the resources in your account and set up the solution with sample data.
    - If you encounter an error or timeout during deployment, changing the location may help, as there could be availability constraints for the resources.
@@ -75,6 +75,6 @@
     azd up
     ```
 
-8. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service, and get the app URL from `Default domain`.
+1. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service, and get the app URL from `Default domain`.
 
-9. When you're finished testing the application, you can remove all deployed resources by running `azd down` or use `azd down --purge --force` to force the removal.
+1. When you're finished testing the application, you can remove all deployed resources by running `azd down` or use `azd down --purge --force` to force the removal.
