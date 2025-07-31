@@ -296,7 +296,7 @@ The All-in-One approach is a 3-Step deployment in one script that handles Deploy
 
     ```bash
     # Step 2: Build and push images
-    ./infra/scripts/build-and-push-after-acr.sh -g "$AZURE_RESOURCE_GROUP" -t "latest"
+    ./infra/scripts/build_and_push_after_acr.sh -g "$AZURE_RESOURCE_GROUP" -t "latest"
     ```
 
     ```bash
