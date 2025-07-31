@@ -102,8 +102,7 @@ fi
 # Build and push backend
 print_status "Building and pushing backend image..."
 BACKEND_IMAGE="${ACR_LOGIN_SERVER}/macaebackend:${IMAGE_TAG}"
-docker build --platform linux/amd64 -t "$BACKEND_IMAGE" ./src/backend
-
+docker build -t "$BACKEND_IMAGE" ./src/backend
 if [[ $? -ne 0 ]]; then
     print_error "Failed to build backend image"
     exit 1
@@ -119,7 +118,7 @@ print_success "Backend image pushed: $BACKEND_IMAGE"
 # Build and push frontend
 print_status "Building and pushing frontend image..."
 FRONTEND_IMAGE="${ACR_LOGIN_SERVER}/macaefrontend:${IMAGE_TAG}"
-docker build --platform linux/amd64 -t "$FRONTEND_IMAGE" ./src/frontend
+docker build -t "$FRONTEND_IMAGE" ./src/frontend
 if [[ $? -ne 0 ]]; then
     print_error "Failed to build frontend image"
     exit 1

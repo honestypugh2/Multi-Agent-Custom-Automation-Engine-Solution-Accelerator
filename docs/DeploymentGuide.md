@@ -158,49 +158,6 @@ The solution contains a [development container](https://code.visualstudio.com/do
 ### 🏠 Local Environment
 
 <details>
-  <summary><b>Deploy in VS Code Dev Containers: Manual</b></summary>
-
-The easiest way to run this accelerator is in a VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-
-The solution contains a [development container](https://code.visualstudio.com/docs/remote/containers) with all the required tooling to develop and deploy the accelerator. To deploy the accelerator using the provided development container you will also need:
-
-- [Visual Studio Code](https://code.visualstudio.com)
-- [Remote containers extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-
-❗If you are running this on Windows, we recommend you clone this repository in [WSL](https://code.visualstudio.com/docs/remote/wsl).
-
-1. Start Docker Desktop (install it if not already installed).
-
-2. Clone the project.
-    ```bash
-    git clone https://github.com/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator
-    ```
-
-3. Open the cloned repository in Visual Studio Code.
-
-    ```bash
-    code .
-    ```
-
-4.  In the VS Code window that opens, connect to the development container.
-
-    > [!TIP]
-    Visual Studio Code should recognize the available development container and ask you to open the folder using it. For additional details on connecting to remote containers, please see the [Open an existing folder in a container](https://code.visualstudio.com/docs/remote/containers#_quick-start-open-an-existing-folder-in-a-container) quickstart.
-
-    :exclamation: If Visual Studio Code does not recognize the development container or you miss the pop-up where it asks you to open in container, please see [Open a WSL 2 folder in a container on Windows](https://code.visualstudio.com/docs/devcontainers/containers#_open-a-wsl-2-folder-in-a-container-on-windows).
-
-5. Once the project files show up (this may take several minutes), open a terminal window.
-
-6. Continue with the deployment steps using **one** of the options below:
-  - [Deploying with AZD](./DeployWithAZD.md#deploying-with-azd)
-  - [Deploying with AZD: All-in-One](./DeployWithAZDAllInOne.md#deploying-with-azd-all-in-one)
-
-
-</details>
-
-### 🏠 Local Environment
-
-<details>
   <summary><b>Deploy in your Local Environment</b></summary>
 
 If you're not using one of the above options for opening the project, then you'll need to:
